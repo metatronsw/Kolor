@@ -15,6 +15,10 @@ RGB › XYZ, HSV, HSL, OKLAB, OKLCH, YUV, CMYK
 XYZ › xyY, UV, LAB, LUV, CAM16
 LUV › LCh › HSLuv / HPLuv
 
+```Swift
+	let srgb = sRGB(123, 223, 68)
+	let lab = srgb.toLAB()
+```
 
 In color spaces that are Uniform Color Spaces (UCS) and sRGB, the *distance(from:)* method or special deltaE functions can be applied.
 
@@ -23,12 +27,12 @@ In color spaces that include a cylindrical (Hue) channel, palette generation can
 There are excellent and useful extensions for the CGImage and Image classes.
 
 
-Supported:
-=========
+## Supported:
 
-## RGB Color Spaces
-- **sRGB**
-- **Display P3**
+
+### RGB Color Spaces
+- **[ sRGB ]**
+- **[ Display P3 ]**
 - A98 RGB
 - Rec. 2020
 - Rec. 2020 (OETF)
@@ -37,36 +41,36 @@ Supported:
 - Rec. 709 (OETF)
 - Rec. 2100 PQ
 - Rec. 2100 HLG
-- **Linear sRGB**
-- **Linear Display P3**
+- **[ Linear sRGB ]**
+- **[ Linear Display P3 ]**
 - Linear A98 RGB
 - Linear Rec. 2020
 - Linear Rec. 2100
 - Linear ProPhoto RGB
 
-## Cylindrical sRGB Spaces
-- **HSV**
-- **HSL**
+### Cylindrical sRGB Spaces
+- **[ HSV ]**
+- **[ HSL ]**
 - HWB
 - HSI
 - Okhsv
 - Okhsl
-- **OkLCh**
-- **HSLuv**
-- **HPLuv**
+- **[ OkLCh ]**
+- **[ HSLuv ]**
+- **[ HPLuv ]**
 - Cubehelix
 
-## XYZ Spaces
-- **XYZ D65**
-- **XYZ D50**
+### XYZ Spaces
+- **[ XYZ D65 ]**
+- **[ XYZ D50 ]**
 
-## Lab Like Spaces
-- **Lab D50**
-- **Lab D65**
-- **Oklab**
+### Lab Like Spaces
+- **[ Lab D50 ]**
+- **[ Lab D65 ]**
+- **[ Oklab ]**
 - Oklrab
-- **Luv**
-- **DIN99o**
+- **[ Luv ]**
+- **[ DIN99o ]**
 - Jzazbz
 - Hunter Lab
 - RLAB
@@ -81,9 +85,9 @@ Supported:
 - CAM16 LCD
 - XYB
 
-## LCh Like Spaces
-- **LCh D50**
-- **LCh D65**
+### LCh Like Spaces
+- **[ LCh D50 ]**
+- **[ LCh D65 ]**
 - OkLCh
 - OkLrCh
 - LCh(uv)
@@ -95,21 +99,22 @@ Supported:
 - HCT
 - ZCAM JMh
 
-## ACES Spaces
+### ACES Spaces
 - ACES 2065-1
 - ACEScg
 - ACEScc
 - ACEScct
 
-## Miscellaneous Spaces
-- **xyY**
+### Miscellaneous Spaces
+- **[ xyY ]**
 - CIE 1960 UCS
 - RYB
 - CMY
-- **CMYK**
+- **[ CMYK ]**
 - oRGB
 - Prismatic
 
+======
 
 The various components and formulas were gathered from multiple sources and rewritten from: 
 
