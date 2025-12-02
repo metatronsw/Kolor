@@ -2,7 +2,7 @@
 
 A library for color spaces and conversions in Swift 5.6+ 
 
-With this library, image conversion, analysis, color similarity, quantization, indexing, and grouping by tones can be implemented easily and quickly.
+With this library, image conversion, analysis, color similarity, quantization, indexing, histogram, and grouping by tones can be implemented easily and quickly.
 
 In addition, the library includes a large collection of colors. These artistic and scientific values can be useful for design work or tasks involving color groups.
 
@@ -17,7 +17,14 @@ LUV › LCh › HSLuv / HPLuv
 
 ```Swift
 	let srgb = sRGB(123, 223, 68)
-	let lab = srgb.toLAB()
+	let oklab = srgb.toOKLAB()
+	
+	let rgb = RGB(r: 1, g: 0.5, b: 0.2)
+	let p3 = rgb.toDisplayP3()
+	
+	let xyz = rgb.toXYZ()
+	let adapted = xyz.to_XYZ(fromWhiteRef: .D65, toWhiteRef: .D50)
+		
 ```
 
 In color spaces that are Uniform Color Spaces (UCS) and sRGB, the *distance(from:)* method or special deltaE functions can be applied.
@@ -26,6 +33,20 @@ In color spaces that include a cylindrical (Hue) channel, palette generation can
 
 There are excellent and useful extensions for the CGImage and Image classes.
 
+```Swift
+
+	let image = NSImage(named: "cat").toCGImage()
+	let pixels = image.toSRGB()
+	
+	let counts = pixels.makeQuantizedCounts(levels: 4)
+	let hist = Histogram(from: counts, levels: 4, totalPixels: pixels.count)
+	
+	let colors = extractColorsWithRatio(from: image, maxDepth: 5)
+	
+	let quantized = pixels.map { $0.toQuantized(by: 4) }
+	let posterized = CGImage.initFrom(rgb: quantized, width: image.width, height: image.height)
+	
+```
 
 ## Supported:
 
