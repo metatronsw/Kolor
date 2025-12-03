@@ -1,10 +1,11 @@
 import XCTest
-@testable import Kolor
+//@testable import Kolor
+import Kolor
 
 final class KolorTests: XCTestCase {
 
 	func testConversion() throws {
-		
+				
 		let srgb = sRGB(123, 223, 68)
 
 		XCTAssertEqual(srgb, srgb.toCMYK().toSRGB(), "CMYK")
@@ -84,74 +85,4 @@ final class KolorTests: XCTestCase {
 
 }
 
-
-final class KolorPerformance: XCTestCase {
-	
-	@discardableResult
-	private func withTimer(_ action: () -> () ) -> UInt64 {
-		let start = mach_absolute_time()
-		
-		action()
-		
-		let end = mach_absolute_time()
-		return (end - start)
-	}
-	
-	
-	
-	
-	func testRun() throws {
-		
-		let num: Int = 100000
-		var rnd: UInt8 { UInt8.random(in: 0..<255) }
-		
-		var array = [RGB]()
-		array.reserveCapacity(num + 1)
-		
-		for _ in 0...num {
-			let rgb = sRGB(rnd, rnd, rnd).toRGB()
-			array.append(rgb)
-		}
-		
-		print("Run TIME:", withTimer {
-			for rgb in array {
-				let xyz = rgb.toXYZ()
-				let d50 = xyz.to_XYZ(fromWhiteRef: .D65, toWhiteRef: .D50)
-				
-//				let p3 = rgb.toDisplayP3()
-//				let p3l = rgb.toDisplayP3Linear()
-//				let a = p3.displayP3_toRGB()
-//				let b = p3l.displayP3Linear_toRGB()
-				
-			}
-		} / UInt64(num) )
-		
-
-		/// xyz d50:
-		/// 	Run TIME: 3815 - hagyományos array szorzás
-		/// 	Run TIME: 4057 - simd
-		/// 	Run TIME: 333  - tuple matrix
-		
-		
-		/// DisplayP3:
-		///	Run TIME: 4385 4537 - simd szorzás
-		///   Run TIME: 963, 955 - tuple matrix
-	}
-	
-	
-//	func testfastz() throws {
-//		
-//		let col = RGB(1, 0.5, 0.2).toOKLAB().toOKLCH()
-//		print(col)
-////		print("oklab(0.73309 0.11929 0.13089)")
-//		print("oklch(0.73309 0.17709 47.654)")
-//		print(col.toRGB())
-//
-////		print("lab65( 67.009 43.324 69.475)")
-////		print(DIN99(CIELab: col.L, a: col.a, b: col.b))
-//		
-////		print(DIN99(CIELab: 67.009, a: 43.324, b: 69.475))
-////		print("din99o 70.503 26.368 35.583")
-//	}
-}
 

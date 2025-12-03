@@ -1,6 +1,11 @@
-import Foundation
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
-#if os(macOS)
+
+#if canImport(AppKit)
 public extension NSImage {
 	
 	func toCGImage() -> CGImage? {
@@ -11,7 +16,7 @@ public extension NSImage {
 	}
 	
 }
-#else
+#elseif canImport(UIKit)
 public extension UIImage {
 	
 	func toCGImage() -> CGImage? {
@@ -27,11 +32,11 @@ public extension UIImage {
 public extension CGImage {
 	
 	static func initFrom(systemNamed name: String) -> CGImage? {
-#if os(macOS)
+#if canImport(AppKit)
 		guard let nsImage = NSImage(named: name) else { return nil }
 		
 		return nsImage.toCGImage()
-#else
+#elseif canImport(UIKit)
 		guard let uiImage = UIImage(named: name) else { return nil }
 		
 		return uiImage.toCGImage()

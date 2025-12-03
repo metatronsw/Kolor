@@ -22,7 +22,12 @@ let package = Package(
 
 	targets: [
 		.target(name: "Kolor"),
-		.testTarget(name: "KolorTests", dependencies: ["Kolor"]),
+//		.testTarget(name: "KolorTests", dependencies: ["Kolor"]),
+		.testTarget(name: "KolorTests",
+						dependencies: ["Kolor"],
+						swiftSettings: [.unsafeFlags(["-O"], .when(configuration: .release)) ])
 	]
-
+	
+		
+	
 )
