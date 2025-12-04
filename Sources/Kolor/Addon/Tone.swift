@@ -8,27 +8,34 @@ public enum Tone: Int, CaseIterable, Identifiable, Comparable, Codable {
 	case BLACK
 	case GRAY
 	case WHITE
+	
 	case BROWN
-	case BEIGE
 	case MERLOT
 	case RED
+	
 	case ORANGE
 	case OCHRE
 	case YELLOW
+	
 	case OLIVE
+	case MOSS
 	case GREEN
 	case MINT
 	case TEAL
+	
 	case CYAN
-	case DEEP
+	case MARINE
 	case BLUE
 	case AZURE
+	
 	case PURPLE
 	case VIOLET
 	case MAGENTA
+
 	case PINK
 	case CORAL
 	case PASTEL
+	case BEIGE
 
 }
 
@@ -38,36 +45,38 @@ public enum Tone: Int, CaseIterable, Identifiable, Comparable, Codable {
 public extension Tone {
 
 	init(name: String) throws {
+		
 		let word = name
-			.lowercased()
+			.uppercased()
 			.applyingTransform(.stripDiacritics, reverse: false) ?? ""
 
 		self = switch word {
 				
-			case "k", "black": .BLACK
-			case "a", "gray": .GRAY
-			case "w", "white": .WHITE
-			case "n", "brown": .BROWN
-			case "d", "beige": .BEIGE
-			case "e", "merlot": .MERLOT
-			case "r", "red": .RED
-			case "o", "orange": .ORANGE
-			case "h", "ochre": .OCHRE
-			case "y", "yellow": .YELLOW
-			case "l", "olive": .OLIVE
-			case "g", "green": .GREEN
-			case "i", "mint": .MINT
-			case "t", "teal": .TEAL
-			case "c", "cyan": .CYAN
-			case "f", "deep": .DEEP
-			case "b", "blue": .BLUE
-			case "z", "azure": .AZURE
-			case "u", "purple": .PURPLE
-			case "v", "violet": .VIOLET
-			case "m", "magenta": .MAGENTA
-			case "p", "pink": .PINK
-			case "x", "coral": .CORAL
-			case "s", "pastel": .PASTEL
+			case "K", "black": .BLACK
+			case "A", "gray": .GRAY
+			case "W", "white": .WHITE
+			case "N", "brown": .BROWN
+			case "E", "merlot": .MERLOT
+			case "R", "red": .RED
+			case "O", "orange": .ORANGE
+			case "H", "ochre": .OCHRE
+			case "Y", "yellow": .YELLOW
+			case "L", "olive": .OLIVE
+			case "Q", "moss": .MOSS
+			case "G", "green": .GREEN
+			case "I", "mint": .MINT
+			case "T", "teal": .TEAL
+			case "C", "cyan": .CYAN
+			case "F", "deep": .MARINE
+			case "B", "blue": .BLUE
+			case "Z", "azure": .AZURE
+			case "U", "purple": .PURPLE
+			case "V", "violet": .VIOLET
+			case "M", "magenta": .MAGENTA
+			case "P", "pink": .PINK
+			case "X", "coral": .CORAL
+			case "S", "pastel": .PASTEL
+			case "D", "beige": .BEIGE
 				
 			default:
 				throw POSIXError(.EINVAL)
@@ -80,18 +89,18 @@ public extension Tone {
 			case .GRAY: "A"
 			case .WHITE: "W"
 			case .BROWN: "N"
-			case .BEIGE: "D"
 			case .MERLOT: "E"
 			case .RED: "R"
 			case .ORANGE: "O"
 			case .OCHRE: "H"
 			case .YELLOW: "Y"
 			case .OLIVE: "L"
+			case .MOSS: "Q"
 			case .GREEN: "G"
 			case .MINT: "I"
 			case .TEAL: "T"
 			case .CYAN: "C"
-			case .DEEP: "F"
+			case .MARINE: "F"
 			case .BLUE: "B"
 			case .AZURE: "Z"
 			case .PURPLE: "U"
@@ -100,6 +109,7 @@ public extension Tone {
 			case .PINK: "P"
 			case .CORAL: "X"
 			case .PASTEL: "S"
+			case .BEIGE: "D"
 		}
 	}
 
@@ -117,10 +127,11 @@ public extension Tone {
 			case .YELLOW: .YELLOW
 			case .OLIVE: .OLIVE
 			case .GREEN: .GREEN
+			case .MOSS: .MOSS
 			case .MINT: .MINT
 			case .TEAL: .TEAL
 			case .CYAN: .CYAN
-			case .DEEP: .DEEP
+			case .MARINE: .MARINE
 			case .BLUE: .BLUE
 			case .AZURE: .AZURE
 			case .PURPLE: .PURPLE
@@ -235,11 +246,12 @@ public extension Tone {
 			case .OCHRE: .OCHREs
 			case .YELLOW: .YELLOWs
 			case .OLIVE: .OLIVEs
+			case .MOSS: .MOSSs
 			case .GREEN: .GREENs
 			case .MINT: .MINTs
 			case .TEAL: .TEALs
 			case .CYAN: .CYANs
-			case .DEEP: .DEEPs
+			case .MARINE: .MARINEs
 			case .BLUE: .BLUEs
 			case .AZURE: .AZUREs
 			case .PURPLE: .PURPLEs

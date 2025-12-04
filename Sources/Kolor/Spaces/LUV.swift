@@ -9,12 +9,12 @@ public struct LUV: Kolor {
 
 	/// `Lightness` component [0...1] (0, 100)
 	public var l: Double { get { ch.0 } set { ch.0 = newValue } }
-	/// `U` (Green-Red) component [0...1] (-84.936, 175.042)≈
+	/// `U` (Green-Red) component [0...1] ~(-84.936, 175.042)
 	public var u: Double { get { ch.1 } set { ch.1 = newValue } }
-	/// `V` (Blue-Yellow) component [0...1] (-125.882, 87.243)≈
+	/// `V` (Blue-Yellow) component [0...1] ~(-125.882, 87.243)
 	public var v: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...1, 0...1, 0...1) }
+	public static var ranges: CompRanges { (0...1, 0...1, 0...1) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -46,6 +46,10 @@ public struct LUV: Kolor {
 		self.init(x: xyz.x, y: xyz.y, z: xyz.z, WhiteRef: .D65)
 	}
 
+	public init(normX: Double, normY: Double, normZ: Double) {
+		self.ch = (normX, normY, normZ)
+	}
+	
 	public func normalized() -> Channels { (ch.0, ch.1, ch.2) }
 
 }
@@ -82,9 +86,11 @@ public extension LUV {
 }
 
 public extension LUV {
+	
 	func blend(c: LUV, t: Double) -> LUV {
 		LUV(l: l + t * (c.l - l), u: u + t * (c.u - u), v: v + t * (c.v - v))
 	}
+	
 }
 
 extension LUV: DeltaE {

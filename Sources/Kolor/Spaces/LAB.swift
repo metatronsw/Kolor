@@ -6,17 +6,18 @@ public struct LAB: Kolor {
 
 	public var ch: Channels
 
-	/// `Lightness` component [0...1] (0, 100)
+	/// `Lightness` component [0...1]
 	public var L: Double { get { ch.0 } set { ch.0 = newValue } }
-	/// `A` (Green-Red) component [-1...1] (-125, 125)
+	/// `A` (Green-Red) component [-1...1] ~(-125, 125)
 	public var a: Double { get { ch.1 } set { ch.1 = newValue } }
-	/// `B` (Blue-Yellow) component [-1...1] (-125, 125)
+	/// `B` (Blue-Yellow) component [-1...1] ~(-125, 125)
 	public var b: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...1, -1...1, -1...1) }
+	public static var ranges: CompRanges { (0...1, -1...1, -1...1) }
 
-	public init(ch: Channels) { self.ch = (ch.0, (ch.1 - 0.5) * 2, (ch.2 - 0.5) * 2) }
 
+	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
+	
 	/// Raw Init
 	public init(L: Double = 0, a: Double = 0, b: Double = 0) { self.ch = (L, a, b) }
 
@@ -39,40 +40,15 @@ public struct LAB: Kolor {
 		self.init(x: xyz.x, y: xyz.y, z: xyz.z, WhiteRef: .D65)
 	}
 
+	public init(normX: Double, normY: Double, normZ: Double) {
+		self.ch = (normX, (normY - 0.5) * 2, (normZ - 0.5) * 2)
+	}
 	
-	/* /// Alternative
-	 public init(X x: Double, Y y: Double, Z z: Double, WhiteRef w: XYZ = .D65) {
-	 func f(_ t: Double) -> Double {
-	 let delta = 6.0 / 29.0
-	 let delta3 = delta * delta * delta
-	 
-	 if t > delta3 {
-	 return pow(t, 1.0 / 3.0)
-	 } else {
-	 return t / (3.0 * delta * delta) + 4.0 / 29.0
-	 }
-	 }
-	 
-	 // Normalizált értékek
-	 let xr = (x * 100) / (w.x * 100)
-	 let yr = (y * 100) / (w.y * 100)
-	 let zr = (z * 100) / (w.z * 100)
-	 
-	 // f(t) függvény alkalmazása
-	 let fx = f(xr)
-	 let fy = f(yr)
-	 let fz = f(zr)
-	 
-	 // LAB koordináták számítása
-	 let L = 116.0 * fy - 16.0
-	 let a = 500.0 * (fx - fy)
-	 let b = 200.0 * (fy - fz)
-	 
-	 self.ch = (L, a, b)
-	 }
-	 */
-	
+	public func normalized() -> Channels {
+		(ch.0, (ch.1 / 2) + 0.5, (ch.2 / 2) + 0.5)
+	}
 }
+
 
 public extension LAB {
 
@@ -96,6 +72,10 @@ public extension LAB {
 
 	func toRGB() -> RGB { self.toXYZ().toRGB() }
 
+	var hue: Double { atan2(a, b) }
+	
+	var chroma: Double { sqrt(a * a + b * b) }
+	
 }
 
 
@@ -136,9 +116,7 @@ extension LAB: DeltaE {
 	
 	/// CIE DELTA ΔE2000 / (ΔE00) - Weighted
 	public func distance(CIEDE2000 c: LAB, kl: Double = 1, kc: Double = 1, kh: Double = 1) -> Double {
-		/// Delta E (CIE 2000)
-		/// http://www.brucelindbloom.com/index.html?ColorDifferenceCalc.html
-		
+	
 		let (l1, a1, b1) = (L * 100, a * 100, b * 100)
 		let (l2, a2, b2) = (c.L * 100, c.a * 100, c.b * 100)
 		

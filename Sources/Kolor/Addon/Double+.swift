@@ -30,23 +30,8 @@ public extension Double {
 		return t
 	}
 	
-//	// Logaritmikus skála - jobban megőrzi a kis értékeket
-//	func toUInt16Log() -> UInt16 {
-//		guard self > 0 else { return 0 }
-//		let log = log10(self * 1_000_000 + 1) / 6.0  // 0...1 tartományba
-//		return UInt16(min(65535, log * 65535))
-//	}
-//	
-//	init(fromUInt16Log value: UInt16) {
-//		let log = Double(value) / 65535.0 * 6.0
-//		return (pow(10, log) - 1) / 1_000_000
-//	}
-	
 	
 	func linearize() -> Double {
-		//		if self <= 0.04045 { return self / 12.92 }
-		//		return pow((self + 0.055) / 1.055, 2.4)
-		
 		return self <= 0.04045
 		? self / 12.92
 		: pow((self + 0.055) / 1.055, 2.4)

@@ -14,7 +14,7 @@ public struct CMYK: Hashable, CustomStringConvertible {
 	public let k: Double
 
 	/// Raw Init
-	init(c: Double = 0, m: Double = 0, y: Double = 0, k: Double = 0) {
+	public init(c: Double = 0, m: Double = 0, y: Double = 0, k: Double = 0) {
 		self.c = c
 		self.m = m
 		self.y = y
@@ -53,5 +53,5 @@ public extension CMYK {
 	}
 
 	func toSRGB() -> sRGB { self.toRGB().toSRGB() }
-
+	
 }

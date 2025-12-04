@@ -83,7 +83,8 @@ public enum Art {
 
 public extension Art {
 
-	static let allCases = [BLACKS, GRAYS, WHITES, BROWNS, REDS, ORANGES, YELLOWS, GREENS, CYANS, BLUES, MAGENTAS, PURPLES].flatMap { $0 }
+//	static let allCases = [BLACKS, GRAYS, WHITES, BROWNS, REDS, ORANGES, YELLOWS, GREENS, CYANS, BLUES, MAGENTAS, PURPLES].flatMap { $0 }
+	static let allCases = [BROWNS, REDS, ORANGES, YELLOWS, GREENS, CYANS, BLUES, MAGENTAS, PURPLES].flatMap { $0 }
 
 	static let BLACKS: [sRGB] = [
 		Art.Anthracite,

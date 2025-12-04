@@ -14,7 +14,7 @@ public struct HSLuv: Kolor {
 	/// `Luminance` component [0...1]
 	public var l: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...360, 0...1, 0...1) }
+	public static var ranges: CompRanges { (0...360, 0...1, 0...1) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -57,6 +57,8 @@ public struct HSLuv: Kolor {
 		self.init(l: LCh.l, c: LCh.c, h: LCh.h)
 	}
 
+	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX * 360, normY, normZ) }
+	
 	public func normalized() -> Channels { (ch.0 / 360.0, ch.1, ch.2) }
 
 }
@@ -166,13 +168,20 @@ public extension HSLuv {
 
 extension HSLuv: Cylindrical {
 	
-	public init(h: Double, s: Double, v: Double) { self.ch = (h, s, v) }
+	public var hue: Double { get { ch.0 } set { ch.0 = newValue } }
+	public var sat: Double { get { ch.1 } set { ch.1 = newValue } }
+	public var val: Double { get { ch.2 } set { ch.2 = newValue } }
 	
-	public var v: Double { get { ch.2 } set { ch.2 = newValue } }
+	public init(hue: Double, sat: Double, val: Double) {
+		self.ch = (hue, sat, val)
+	}
+	
 }
 
 extension HSLuv: DeltaE {
+	
 	public func distance(from c: HSLuv) -> Double {
 		sqrt(sq((h - c.h) / 100.0) + sq(s - c.s) + sq(l - c.l))
 	}
+	
 }

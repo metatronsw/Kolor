@@ -22,12 +22,12 @@ public struct sRGB: Kolor, ExpressibleByArrayLiteral {
 		}
 	}
 
-	public var ranges: CompRanges { (0...255, 0...255, 0...255) }
+	public static var ranges: CompRanges { (0...255, 0...255, 0...255) }
 
-	public init(ch: Channels) { // TODO: kérdéses hogy ch esetén mi legyen
-		self.r = UInt8(ch.0 * 255 + 0.5)
-		self.g = UInt8(ch.1 * 255 + 0.5)
-		self.b = UInt8(ch.2 * 255 + 0.5)
+	public init(ch: Channels) {
+		self.r = UInt8(ch.0)
+		self.g = UInt8(ch.1)
+		self.b = UInt8(ch.2)
 	}
 
 	public init(arrayLiteral elements: ArrayLiteralElement...) {
@@ -58,6 +58,13 @@ public struct sRGB: Kolor, ExpressibleByArrayLiteral {
 		self.b = UInt8(min(255, b))
 	}
 
+	public init(normX: Double, normY: Double, normZ: Double) {
+		self.init(r: normX, g: normY, b: normZ)
+	}
+	
+	public func normalized() -> Channels { (Double(r) / 255, Double(g) / 255, Double(b) / 255) }
+
+	
 	/// Raw Init
 	public init(_ comp: (UInt8, UInt8, UInt8)) {
 		self.r = comp.0
@@ -105,8 +112,6 @@ public struct sRGB: Kolor, ExpressibleByArrayLiteral {
 		self.b = UInt8(hex)
 	}
 
-	public func normalized() -> Channels { (Double(r) / 255, Double(g) / 255, Double(b) / 255) }
-
 }
 
 public extension sRGB {
@@ -140,8 +145,8 @@ public extension sRGB {
 		(x: r.description, y: g.description, z: b.description)
 	}
 
-	func toHexCode() -> String {
-		String(format: "#%02X%02X%02X", r, g, b)
+	func toHexCode(prefix: String = "#") -> String {
+		String(format: "\(prefix)%02X%02X%02X", r, g, b)
 	}
 
 	func toARGB32(A: UInt8 = 255) -> UInt32 { (UInt32(A) << 24) | (UInt32(r) << 16) | (UInt32(g) << 8) | UInt32(b) }
@@ -262,8 +267,7 @@ public extension sRGB {
 		self.g = UInt8((gBin << binShift) + half)
 		self.b = UInt8((bBin << binShift) + half)
 	}
-	
-	
+		
 	
 	func toQuantizedExp(levels: Int, gamma: Double = 2.2) -> sRGB {
 		let rNorm = pow(Double(r) / 255.0, gamma)
@@ -299,90 +303,6 @@ public extension sRGB {
 		self.g = UInt8(min(255,gNorm * 255))
 		self.b = UInt8(min(255,bNorm * 255))
 	}
-	
-	
-	
-	
-	
-//	func toQuantizedCustomRange(
-//		binsLow: Int = 4,
-//		binsMid: Int = 8,
-//		binsHigh: Int = 4,
-//		tresholdLow: UInt8 = 64,
-//		tresholdHigh: UInt8 = 192
-//	) -> Int {
-//		
-//		func quantizeChannel(_ value: UInt8) -> Int {
-//			switch value {
-//				case 0 ..< tresholdLow:
-//					let normalized = Double(value) / Double(tresholdLow)
-//					return min(binsLow - 1, Int(normalized * Double(binsLow)))
-//					
-//				case tresholdLow ..< tresholdHigh:
-//					let normalized = Double(value - tresholdLow) / Double(tresholdHigh - tresholdLow)
-//					return binsLow + min(binsMid - 1, Int(normalized * Double(binsMid)))
-//					
-//				default:
-//					let normalized = Double(value - tresholdHigh) / Double(255 - tresholdHigh)
-//					return binsLow + binsMid + min(binsHigh - 1, Int(normalized * Double(binsHigh)))
-//			}
-//		}
-//		
-//		
-//		let rBin = quantizeChannel(r)
-//		let gBin = quantizeChannel(g)
-//		let bBin = quantizeChannel(b)
-//		
-//		let total = binsLow + binsMid + binsHigh
-//		
-////		return rBin * total * total + gBin * total + bBin
-//		return rBin * binsMid * binsMid + gBin * binsLow + bBin
-//	}
-//	
-	
-	
-	
-	
-//
-//	func toQuantizedLog(levels: Int) -> Int {
-//		let rBin = min(levels - 1, Int(log(Double(r) + 1) / log(256) * Double(levels)))
-//		let gBin = min(levels - 1, Int(log(Double(g) + 1) / log(256) * Double(levels)))
-//		let bBin = min(levels - 1, Int(log(Double(b) + 1) / log(256) * Double(levels)))
-//		
-//		return rBin * levels * levels + gBin * levels + bBin
-//	}
-//	
-//	static func fromQuantizedLog(_ index: Int, levels: Int) -> sRGB {
-//		let rBin = index / (levels * levels)
-//		let gBin = (index / levels) % levels
-//		let bBin = index % levels
-//		
-//		let r = UInt8(exp((Double(rBin) + 0.5) / Double(levels) * log(256)) - 1)
-//		let g = UInt8(exp((Double(gBin) + 0.5) / Double(levels) * log(256)) - 1)
-//		let b = UInt8(exp((Double(bBin) + 0.5) / Double(levels) * log(256)) - 1)
-//		
-//		return sRGB(r: r, g: g, b: b)
-//	}
-//	
-//	func toQuantizedCustom(darkBins: Int, lightBins: Int, threshold: UInt8 = 128) -> Int {
-//		func quantizeChannel(_ value: UInt8) -> Int {
-//			if value < threshold {
-//				// Sötét tartomány: több bin
-//				return Int(Double(value) / Double(threshold) * Double(darkBins))
-//			} else {
-//				// Világos tartomány: kevesebb bin
-//				let offset = Double(value - threshold) / Double(255 - threshold)
-//				return darkBins + Int(offset * Double(lightBins))
-//			}
-//		}
-//		
-//		let totalBins = darkBins + lightBins
-//		let rBin = min(totalBins - 1, quantizeChannel(r))
-//		let gBin = min(totalBins - 1, quantizeChannel(g))
-//		let bBin = min(totalBins - 1, quantizeChannel(b))
-//		
-//		return rBin * totalBins * totalBins + gBin * totalBins + bBin
-//	}
 	
 }
 
@@ -442,28 +362,34 @@ public extension sRGB {
 		return sRGB(max(0, 255 - self.r), max(0, 255 - self.g), max(0, 255 - self.b))
 	}
 
-//	func brighten(_ value: Double) -> Color {
-//		guard let rgba = self.cgColor?.components else { return .clear }
-//
-//		return Color(red: rgba[0]+value, green: rgba[1]+value, blue: rgba[2]+value)
-//	}
 
-	static func paletteGen(step: Int) -> [sRGB] {
+	static func paletteGen(interval: Int) -> [sRGB] {
+		return paletteGen(step: 256 / interval)
+	}
+	
+	static func paletteGen(step: Int, fullWidht f: Bool = true) -> [sRGB] {
+		
 		var (r, g, b) = (0, 0, 0)
 		var palette = [sRGB]()
 
-		while b <= 256 {
-			while g <= 256 {
-				while r <= 256 {
-					palette.append(sRGB(r: min(255, r), g: min(255, g), b: min(255, b)))
+		repeat {
+			repeat {
+				repeat {
+					
+					palette.append( sRGB(r: r, g: g, b: b) )
 					r += step
-				}
+					
+				} while r < 255 + (f ? step : 1)
+				
 				r = 0
 				g += step
-			}
+				
+			} while g < 255 + (f ? step : 1)
+			
 			g = 0
 			b += step
-		}
+			
+		} while b < 255 + (f ? step : 1)
 
 		return palette
 	}

@@ -13,7 +13,7 @@ public struct OKLAB: Kolor, Comparable {
 	/// `B (Blue-Yellow)` component [-0.4...0.4]
 	public var b: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...1, -0.4...0.4, -0.4...0.4) }
+	public static var ranges: CompRanges { (0...1, -0.4...0.4, -0.4...0.4) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -49,6 +49,8 @@ public struct OKLAB: Kolor, Comparable {
 		)
 	}
 
+	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX, normY * 0.8 - 0.4, normZ * 0.8 - 0.4) }
+	
 	public func normalized() -> Channels { (ch.0, (ch.1 + 0.4) / 0.8, (ch.2 + 0.4) / 0.8) }
 
 }
@@ -68,12 +70,10 @@ public extension OKLAB {
 	}
 
 	func toLinearRGB() -> RGB {
-		// 1. M2 inverz: Oklab -> LMS'
 		let l = cub(self.L + 0.3963377774 * self.a + 0.2158037573 * self.b)
 		let m = cub(self.L - 0.1055613458 * self.a - 0.0638541728 * self.b)
 		let s = cub(self.L - 0.0894841775 * self.a - 1.2914855480 * self.b)
 
-		// 3. Kompozit mátrix inverz: LMS -> Linear RGB
 		let r = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s
 		let g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s
 		let b = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
@@ -162,52 +162,6 @@ public extension OKLAB {
 
 		self.ch = (L, a, b)
 	}
-
-//	/// 8×8×8 bin index (0...511)
-//	func toQuantized512() -> Int {
-//		let binL = Int(L * 255) >> 5
-//		let binA = Int((a + 0.4) * 319) >> 5
-//		let binB = Int((b + 0.4) * 319) >> 5
-//		return (binL << 6) | (binA << 3) | binB
-//	}
-
-//	static func fromQuantizedPow2(_ index: Int, levels: Int) -> OkLab {
-//		let shift = Int(log2(Double(levels)))
-//		let mask = levels - 1
-//
-//		let lBin = (index >> (shift * 2)) & mask
-//		let aBin = (index >> shift) & mask
-//		let bBin = index & mask
-//
-//		let L = (Double(lBin) + 0.5) / Double(levels)
-//		let a = (Double(aBin) + 0.5) * 0.8 / Double(levels) - 0.4
-//		let b = (Double(bBin) + 0.5) * 0.8 / Double(levels) - 0.4
-//
-//		return OkLab(L: L, a: a, b: b)
-//	}
-//
-//	/// Asymetric
-
-	/// 8×4×4 = 128 bin aszinkron
-//	func toQuantized128() -> Int {
-	//		let lBin = min(7, max(0, Int(L * 8)))
-	//		let aBin = min(3, max(0, Int((a + 0.4) * 5)))
-	//		let bBin = min(3, max(0, Int((b + 0.4) * 5)))
-//	return (lBin << 4) | (aBin << 2) | bBin
-	// }
-
-//	init(fromQuantized128 index: Int){
-//		let lBin = (index >> 4) & 0b111  // 3 bit, 0-7
-//		let aBin = (index >> 2) & 0b11   // 2 bit, 0-3
-//		let bBin = index & 0b11          // 2 bit, 0-3
-//
-//		let L = (Double(lBin) + 0.5) / 8.0          // -> 0.0625, 0.1875, ... 0.9375
-//		let a = (Double(aBin) + 0.5) / 5.0 - 0.4    // -> -0.3, -0.1, 0.1, 0.3
-//		let b = (Double(bBin) + 0.5) / 5.0 - 0.4
-//
-//		self.ch = (L, a, b)
-//	}
-
 }
 
 extension OKLAB: DeltaE {
@@ -217,8 +171,7 @@ extension OKLAB: DeltaE {
 		let deltaA = self.a - c.a
 		let deltaB = self.b - c.b
 
-		//		return sqrt(deltaL * deltaL + deltaA * deltaA + deltaB * deltaB)
-		return deltaL * deltaL + deltaA * deltaA + deltaB * deltaB
+		return sqrt( sq(deltaL) + sq(deltaA) + sq(deltaB) )
 	}
 
 	public func distanceWeighted(from c: OKLAB, lightnes: Double = 1, power: Double = 1.5) -> Double {
@@ -227,10 +180,12 @@ extension OKLAB: DeltaE {
 		let deltaA = self.a - c.a
 		let deltaB = self.b - c.b
 
-		let sign = deltaL >= 0 ? 1.0 : -1.0
-		let weightedDL = sign * pow(abs(deltaL), power) * lightnes
+//		let sign = deltaL >= 0 ? 1.0 : -1.0
+//		let weightedDL = sign * pow(abs(deltaL), power) * lightnes
+		let weightedDL = pow(abs(deltaL), power) * lightnes
 		
-		return sqrt(sq(weightedDL) + sq(deltaA) + sq(deltaB))
+		return sqrt( sq(weightedDL) + sq(deltaA) + sq(deltaB) )
+//		return ( sq(weightedDL) + sq(deltaA) + sq(deltaB) )
 	}
 
 }

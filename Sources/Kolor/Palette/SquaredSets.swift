@@ -35,6 +35,8 @@ public extension Set<sRGB> {
 	static let OLIVEs: Set<sRGB> = [
 	]
 	
+	static let MOSSs: Set<sRGB> = [
+	]
 	static let GREENs: Set<sRGB> = [
 	]
 	
@@ -47,7 +49,7 @@ public extension Set<sRGB> {
 	static let CYANs: Set<sRGB> = [
 	]
 	
-	static let DEEPs: Set<sRGB> = [
+	static let MARINEs: Set<sRGB> = [
 	]
 	
 	static let BLUEs: Set<sRGB> = [

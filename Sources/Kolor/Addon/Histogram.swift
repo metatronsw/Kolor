@@ -1,5 +1,5 @@
 import Foundation
-import Accelerate
+import simd
 
 public extension Array where Array.Element == sRGB {
 
@@ -157,7 +157,6 @@ public extension Histogram {
 
 	func distance_Simd(to other: Histogram) -> Int {
 		assert(self.bins.count == other.bins.count)
-//		assert(self.bins.count % 16 == 0)
 		
 		var sum = 0
 		
@@ -191,35 +190,6 @@ public extension Histogram {
 		return sum
 	}
 
-	func distance_Acel(to other: Histogram) -> Int {
-		var result = 0
-		
-		self.bins.withUnsafeBufferPointer { aPtr in
-			other.bins.withUnsafeBufferPointer { bPtr in
-				var aFloat = [Float](repeating: 0, count: bins.count)
-				var bFloat = [Float](repeating: 0, count: bins.count)
-				
-				vDSP_vfltu16(aPtr.baseAddress!, 1, &aFloat, 1, vDSP_Length(bins.count))
-				vDSP_vfltu16(bPtr.baseAddress!, 1, &bFloat, 1, vDSP_Length(bins.count))
-				
-				// a - b
-				var diff = [Float](repeating: 0, count: bins.count)
-				vDSP_vsub(bFloat, 1, aFloat, 1, &diff, 1, vDSP_Length(bins.count))
-				
-				// abs
-				vDSP_vabs(diff, 1, &diff, 1, vDSP_Length(bins.count))
-				
-				// sum
-				var sum: Float = 0
-				vDSP_sve(diff, 1, &sum, vDSP_Length(bins.count))
-				
-				result = Int(sum)
-			}
-		}
-		
-		return result
-	}
-	
 	func distance_ChiSquare(to other: Histogram) -> Double {
 		var result = 0.0
 
@@ -242,6 +212,7 @@ public extension Histogram {
 	}
 
 	func intersection_Simd(to other: Histogram) -> Double {
+		
 		assert(self.bins.count == other.bins.count)
 		assert(self.bins.count % 16 == 0)
 
@@ -273,5 +244,5 @@ public extension Histogram {
 
 
 
-// TODO: - LSHIndex
-// TODO: - PCA class színhisztogramokhoz
+// TODO: - LSH Index
+// TODO: - PCA class

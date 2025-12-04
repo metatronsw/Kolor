@@ -30,7 +30,7 @@ public extension sRGB {
 	static let BLOOD     = sRGB(32, 0, 0)
 	static let ROSSO     = sRGB(64, 0, 0)
 	static let MAROON    = sRGB(128, 0, 0)
-	static let MERLOT    = sRGB(128, 64, 64)
+	static let MERLOT    = sRGB(128, 32, 32)
 
 	// • REDs –––––––––––––––––––––––––––––––––––– •
 	static let CARMINE   = sRGB(160, 0, 32)
@@ -43,7 +43,8 @@ public extension sRGB {
 	static let CARROT    = sRGB(224, 128, 32)
 	
 	// • OCHREs –––––––––––––––––––––––––––––––––– •
-	static let OCHRE     = sRGB(192, 160, 0)
+//	static let OCHRE     = sRGB(192, 160, 0)
+	static let OCHRE     = sRGB(224, 192, 32)
 	
 	// • YELLOWs ––––––––––––––––––––––––––––––––– •
 	static let LEMON     = sRGB(240, 240, 16)
@@ -61,6 +62,7 @@ public extension sRGB {
 	static let APPLE     = sRGB(0, 128, 0)
 	static let EMERALD   = sRGB(0, 64, 0)
 	static let GREEN     = sRGB(0, 255, 0)
+	static let MOSS     = sRGB(32, 96, 64)
 	
 	// • MINTs ––––––––––––––––––––––––––––––––––– •
 	static let SPRING    = sRGB(0, 240, 160)
@@ -71,12 +73,9 @@ public extension sRGB {
 	static let CYAN      = sRGB(0, 255, 255)
 
 	// • BLUEs ––––––––––––––––––––––––––––––––––– •
-	static let DEEP      = sRGB(0, 0, 32)
-	
-	// • BLUEs ––––––––––––––––––––––––––––––––––– •
 	static let BLUE      = sRGB(0, 0, 255)
 	static let NAVY      = sRGB(0, 0, 128)
-	static let MARINE    = sRGB(0, 0, 64)
+	static let MARINE    = sRGB(0, 0, 96)
 
 	// • TEALs ––––––––––––––––––––––––––––––––––– •
 	static let TEAL      = sRGB(0, 128, 128)

@@ -13,7 +13,7 @@ public struct HCL: Kolor {
 	/// `Luminance` component [0...1]
 	public var l: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...360, 0...1, 0...1) }
+	public static var ranges: CompRanges { (0...360, 0...1, 0...1) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -39,6 +39,8 @@ public struct HCL: Kolor {
 		self.init(l: lab.L, a: lab.a, b: lab.b)
 	}
 
+	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX * 360, normY, normZ) }
+	
 	public func normalized() -> Channels { (ch.0 / 360.0, ch.1, ch.2) }
 
 }
@@ -81,11 +83,12 @@ public extension HCL {
 
 extension HCL: Cylindrical {
 	
-	public var s: Double { get { ch.1 } set { ch.1 = newValue } }
-	public var v: Double { get { ch.0 } set { ch.0 = newValue } }
+	public var hue: Double { get { ch.0 } set { ch.0 = newValue } }
+	public var sat: Double { get { ch.1 } set { ch.1 = newValue } }
+	public var val: Double { get { ch.2 } set { ch.2 = newValue } }
 	
-	public init(h: Double, s: Double, v: Double) {
-		self.ch = (h, s, v)
+	public init(hue: Double, sat: Double, val: Double) {
+		self.ch = (hue, sat, val)
 	}
 
 }

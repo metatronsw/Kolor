@@ -2,6 +2,8 @@ import Foundation
 
 public struct HSL: Kolor {
 
+	public static var ranges: CompRanges { (0...360, 0...1, 0...1) }
+
 	public var ch: Channels
 
 	/// `Hue` component [0...360]
@@ -11,9 +13,7 @@ public struct HSL: Kolor {
 	/// `Lightness` component [0...1]
 	public var l: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...360, 0...1, 0...1) }
-
-	public init(ch: Channels) { self.ch = (ch.0 * 360, ch.1, ch.2) }
+	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
 	/// Raw Init
 	public init(h: Double = 0, s: Double = 0, l: Double = 0) { self.ch = (h, s, l) }
@@ -43,6 +43,8 @@ public struct HSL: Kolor {
 
 		self.ch = (h, s, l)
 	}
+
+	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX * 360, normY, normZ) }
 
 	public func normalized() -> Channels { (ch.0 / 360.0, ch.1, ch.2) }
 
@@ -115,27 +117,13 @@ public extension HSL {
 }
 
 extension HSL: Cylindrical {
-	
-	public var v: Double { get { ch.0 } set { ch.0 = newValue } }
-	
-	public init(h: Double, s: Double, v: Double) {
-		self.ch = (h, s, v)
-	}
-	
-}
 
+	public var hue: Double { get { ch.0 } set { ch.0 = newValue } }
+	public var sat: Double { get { ch.1 } set { ch.1 = newValue } }
+	public var val: Double { get { ch.2 } set { ch.2 = newValue } }
 	
-//
-//	static func paletteGen(div: Int, saturation: Double = 0.5, lightness: Double = 0.5) -> [HSL] {
-//		let spectrum = 359.0 / Double(div)
-//		var palette = [HSL]()
-//		var h = 0.0
-//
-//		while h <= 360.0 {
-//			palette.append(HSL(h: h, s: saturation, l: lightness))
-//			h += spectrum
-//		}
-//
-//		return palette
-//	}
-//
+	public init(hue: Double, sat: Double, val: Double) {
+		self.ch = (hue, sat, val)
+	}
+
+}

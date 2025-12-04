@@ -11,9 +11,9 @@ public struct HSV: Kolor {
 	/// `Value` or `Brightness` component [0...1]
 	public var v: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...360, 0...1, 0...1) }
+	public static var ranges: CompRanges { (0...360, 0...1, 0...1) }
 
-	public init(ch: Channels) { self.ch = (ch.0 * 360, ch.1, ch.2) }
+	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
 	/// Raw Init
 	public init(h: Double = 0, s: Double = 0, v: Double = 0) { self.ch = (h, s, v) }
@@ -37,6 +37,8 @@ public struct HSV: Kolor {
 
 		self.ch = (h, s, v)
 	}
+
+	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX * 360, normY, normZ) }
 
 	public func normalized() -> Channels { (ch.0 / 360.0, ch.1, ch.2) }
 
@@ -114,7 +116,17 @@ public extension HSV {
 
 }
 
-extension HSV: Cylindrical { }
+extension HSV: Cylindrical { 
+	
+	public var hue: Double { get { ch.0 } set { ch.0 = newValue } }
+	public var sat: Double { get { ch.1 } set { ch.1 = newValue } }
+	public var val: Double { get { ch.2 } set { ch.2 = newValue } }
+	
+	public init(hue: Double, sat: Double, val: Double) {
+		self.ch = (hue, sat, val)
+	}
+	
+}
 
 public extension HSV {
 
@@ -151,18 +163,5 @@ public extension HSV {
 
 		return colors
 	}
-
-//	static func paletteGen(deg: Int, s: Double = 0.5, v: Double = 0.5) -> [HSV] {
-//		let spectrum = 360 / Double(deg)
-//		var h = 0.0
-//		var palette = [HSV]()
-//
-//		while h <= 360 {
-//			palette.append(HSV(h: min(h, 360), s: s, v: v))
-//			h += spectrum
-//		}
-//
-//		return palette
-//	}
 
 }

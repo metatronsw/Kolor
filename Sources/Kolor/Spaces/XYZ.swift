@@ -5,22 +5,26 @@ import simd
 ///
 public struct XYZ: Kolor {
 
-	/// `X` (Green-Red) component [0...1] 
+	/// `X` (Green-Red) component [0...1] ~0.95
 	public var x: Double { get { ch.0 } set { ch.0 = newValue } }
 	/// `Lightness` component [0...1]
 	public var y: Double { get { ch.1 } set { ch.1 = newValue } }
-	/// `Z` (Blue-Yellow) component [0...1]
+	/// `Z` (Blue-Yellow) component [0...1] ~ 1.09
 	public var z: Double { get { ch.2 } set { ch.2 = newValue } }
 
 	public var ch: Channels
 
-	public var ranges: CompRanges { (0...1, 0...1, 0...1) }
+	public static  var ranges: CompRanges { (0...1, 0...1, 0...1) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
 	/// Raw Init
 	public init(x: Double = 0, y: Double = 0, z: Double = 0) {
 		self.ch = (x, y, z)
+	}
+	
+	public init(normX: Double, normY: Double, normZ: Double) {
+		self.ch = (normX, normY, normZ)
 	}
 
 	public init(r: Double, g: Double, b: Double) {

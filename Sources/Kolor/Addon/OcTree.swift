@@ -17,8 +17,6 @@ public func extractColorsWithRatio<K: Kolor>(from cgImage: CGImage, maxDepth: In
 
 
 
-
-
 public final class OcTree<K: Kolor> {
 	
 	public typealias Colors = [(color: K, ratio: Double)]
@@ -76,7 +74,6 @@ public final class OcTree<K: Kolor> {
 		dfs(node: root, out: &result)
 		return result
 	}
-	
 	
 	
 	private func dfs(node: Node, out: inout Colors) {

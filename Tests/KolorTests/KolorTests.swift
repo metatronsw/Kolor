@@ -46,7 +46,7 @@ final class KolorTests: XCTestCase {
 		
 		// TODO: HPLuv implement
 		let lch = c1.toLCh()
-		XCTAssertEqual(HSLuv(Pastel: lch.l, c: lch.c, h: lch.h).description, "[21.149 1.000 0.318]", "HPLuv") // --hpluv 21.154 249.26 31.787  
+		XCTAssertEqual(HSLuv(Pastel: lch.l, c: lch.c, h: lch.spectrum).description, "[21.149 1.000 0.318]", "HPLuv") // --hpluv 21.154 249.26 31.787  
 		
 		XCTAssertEqual(c1.toHSV().description, "[15.000 0.800 0.500]", "HSV") // 15 0.8 0.5
 		XCTAssertEqual(c1.toLAB().description, "[0.318 0.316 0.318]", "LAB") // d65 31.787 31.563 31.816

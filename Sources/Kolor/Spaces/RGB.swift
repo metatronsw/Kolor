@@ -14,7 +14,7 @@ public struct RGB: Kolor, ExpressibleByArrayLiteral {
 	/// `Blue` component [0...1]
 	public var b: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...1, 0...1, 0...1) }
+	public static var ranges: CompRanges { (0...1, 0...1, 0...1) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -24,6 +24,12 @@ public struct RGB: Kolor, ExpressibleByArrayLiteral {
 	/// Raw Init
 	public init(r: Double = 0, g: Double = 0, b: Double = 0) { self.ch = (r, g, b) }
 
+	public init(normX: Double, normY: Double, normZ: Double) {
+		self.ch = (normX, normY, normZ)
+	}
+	
+	public func normalized() -> Channels { self.ch }
+	
 	public init(_ srgb: sRGB) {
 		self.ch = (Double(srgb.r) / 255, Double(srgb.g) / 255, Double(srgb.b) / 255)
 	}
@@ -113,8 +119,6 @@ public extension RGB {
 		RGB(r: r.clamped(), g: g.clamped(), b: b.clamped())
 	}
 	
-	func normalized() -> Channels { self.ch }
-
 	func toSRGB() -> sRGB {
 		sRGB(r: UInt8(min(255, r.clamped() * 255 + 0.5)),
 			  g: UInt8(min(255, g.clamped() * 255 + 0.5)),
@@ -148,6 +152,93 @@ public extension RGB {
 	func toXYZ() -> XYZ { XYZ(r: r, g: g, b: b) }
 	
 	func toYUV() -> YUV { YUV(r: r, g: g, b: b) }
+
+}
+
+public extension RGB {
+
+	/// Convert to Linear RGB
+	func toLinearized() -> RGB {
+		RGB(r: r.linearize(), g: g.linearize(), b: b.linearize())
+	}
+
+	/// Convert to sRGB
+	func toDelinearized() -> RGB {
+		RGB(r: r.delinearize(), g: g.delinearize(), b: b.delinearize())
+	}
+
+	
+	/// Convert from Linear RGB
+	func linear_toDisplayP3Linear() -> RGB {
+		let sRGBtoXYZ = (
+			(0.4124564, 0.3575761, 0.1804375),
+			(0.2126729, 0.7151522, 0.0721750),
+			(0.0193339, 0.1191920, 0.9503041)
+		)
+
+		let XYZtoP3 = (
+			(2.493496911941425, -0.9313836179191239, -0.40271078445071684),
+			(-0.8294889695615747, 1.7626640603183463, 0.023624685841943577),
+			(0.03584583024378447, -0.07617238926804182, 0.9568845240076872)
+		)
+
+//		let rgbLinear = (r.linearize(), g.linearize(), b.linearize())
+		let xyz = matrixMul(sRGBtoXYZ, self.ch)
+
+		let p3Linear = matrixMul(XYZtoP3, xyz)
+
+		return RGB(ch: p3Linear)
+	}
+	
+	/// Convert to DisplayP3
+	func toDisplayP3() -> RGB {
+		let p3Linear = self.toLinearized().linear_toDisplayP3Linear()
+
+		func gammaCorrect(_ c: Double) -> Double {
+			let clamped = max(0.0, min(1.0, c))
+			return (clamped <= 0.0031308) ? (12.92 * clamped) : (1.055 * pow(clamped, 1.0 / 2.4) - 0.055)
+		}
+
+		return RGB(gammaCorrect(p3Linear.r),
+					  gammaCorrect(p3Linear.g),
+					  gammaCorrect(p3Linear.b))
+	}
+
+	func displayP3_toRGB() -> RGB {
+		
+		func displayP3ToLinear(_ c: Double) -> Double {
+			return (c <= 0.04045) ? (c / 12.92) : pow((c + 0.055) / 1.055, 2.4)
+		}
+
+		let linearP3 = RGB(displayP3ToLinear(r), displayP3ToLinear(g), displayP3ToLinear(b))
+		return linearP3.displayP3Linear_toRGB()
+	}
+
+	func displayP3Linear_toRGB() -> RGB {
+		func linearToSRGB(_ c: Double) -> Double {
+			let clamped = max(0.0, min(1.0, c))
+			return (clamped <= 0.0031308) ? (12.92 * clamped) : (1.055 * pow(clamped, 1.0 / 2.4) - 0.055)
+		}
+
+		let P3toXYZ = (
+			(0.4865709486482162, 0.26566769316909306, 0.1982172852343625),
+			(0.2289745640697488, 0.6917385218365064, 0.079286914093745),
+			(0.0, 0.04511338185890264, 1.043944368900976)
+		)
+
+		let XYZtoSRGB = (
+			(3.2404542, -1.5371385, -0.4985314),
+			(-0.9692660, 1.8760108, 0.0415560),
+			(0.0556434, -0.2040259, 1.0572252)
+		)
+
+		let xyz = matrixMul(P3toXYZ, self.ch)
+		let linearSRGB = matrixMul(XYZtoSRGB, xyz)
+
+		return RGB(linearToSRGB(linearSRGB.0),
+					  linearToSRGB(linearSRGB.1),
+					  linearToSRGB(linearSRGB.2))
+	}
 
 }
 
@@ -185,12 +276,12 @@ public extension RGB {
 	func blend(c: RGB, t: Double) -> RGB {
 		RGB(r: r + t * (c.r - r), g: g + t * (c.g - g), b: b + t * (c.b - b))
 	}
-
+	
 	func paletteGen(step: Int) -> [RGB] {
 		let stp = 1.0 / Double(step)
 		var (r, g, b) = (0.0, 0.0, 0.0)
 		var palette = [RGB]()
-
+		
 		while b <= 1 {
 			while g <= 1 {
 				while r <= 1 {
@@ -203,91 +294,8 @@ public extension RGB {
 			g = 0
 			b += stp
 		}
-
+		
 		return palette
 	}
-
-}
-
-public extension RGB {
-
-	/// Linear RGB
-	func toLinearized() -> RGB {
-		RGB(r: r.linearize(), g: g.linearize(), b: b.linearize())
-	}
-
-	/// sRGB
-	func toDelinearized() -> RGB {
-		RGB(r: r.delinearize(), g: g.delinearize(), b: b.delinearize())
-	}
-
-	func toDisplayP3Linear() -> RGB {
-		let sRGBtoXYZ = (
-			(0.4124564, 0.3575761, 0.1804375),
-			(0.2126729, 0.7151522, 0.0721750),
-			(0.0193339, 0.1191920, 0.9503041)
-		)
-
-		let XYZtoP3 = (
-			(2.493496911941425, -0.9313836179191239, -0.40271078445071684),
-			(-0.8294889695615747, 1.7626640603183463, 0.023624685841943577),
-			(0.03584583024378447, -0.07617238926804182, 0.9568845240076872)
-		)
-
-		let rgbLinear = (r.linearize(), g.linearize(), b.linearize())
-		let xyz = matrixMul(sRGBtoXYZ, rgbLinear)
-
-		let p3Linear = matrixMul(XYZtoP3, xyz)
-
-		return RGB(ch: p3Linear)
-	}
-
-	func toDisplayP3() -> RGB {
-		let p3Linear = self.toDisplayP3Linear()
-
-		func linearToDisplayP3(_ c: Double) -> Double {
-			let clamped = max(0.0, min(1.0, c))
-			return (clamped <= 0.0031308) ? (12.92 * clamped) : (1.055 * pow(clamped, 1.0 / 2.4) - 0.055)
-		}
-
-		return RGB(linearToDisplayP3(p3Linear.r),
-					  linearToDisplayP3(p3Linear.g),
-					  linearToDisplayP3(p3Linear.b))
-	}
-
-	func displayP3_toRGB() -> RGB {
-		func displayP3ToLinear(_ c: Double) -> Double {
-			return (c <= 0.04045) ? (c / 12.92) : pow((c + 0.055) / 1.055, 2.4)
-		}
-
-		let linearP3 = RGB(displayP3ToLinear(r), displayP3ToLinear(g), displayP3ToLinear(b))
-		return linearP3.displayP3Linear_toRGB()
-	}
-
-	func displayP3Linear_toRGB() -> RGB {
-		func linearToSRGB(_ c: Double) -> Double {
-			let clamped = max(0.0, min(1.0, c))
-			return (clamped <= 0.0031308) ? (12.92 * clamped) : (1.055 * pow(clamped, 1.0 / 2.4) - 0.055)
-		}
-
-		let P3toXYZ = (
-			(0.4865709486482162, 0.26566769316909306, 0.1982172852343625),
-			(0.2289745640697488, 0.6917385218365064, 0.079286914093745),
-			(0.0, 0.04511338185890264, 1.043944368900976)
-		)
-
-		let XYZtoSRGB = (
-			(3.2404542, -1.5371385, -0.4985314),
-			(-0.9692660, 1.8760108, 0.0415560),
-			(0.0556434, -0.2040259, 1.0572252)
-		)
-
-		let xyz = matrixMul(P3toXYZ, self.ch)
-		let linearSRGB = matrixMul(XYZtoSRGB, xyz)
-
-		return RGB(linearToSRGB(linearSRGB.0),
-					  linearToSRGB(linearSRGB.1),
-					  linearToSRGB(linearSRGB.2))
-	}
-
+	
 }

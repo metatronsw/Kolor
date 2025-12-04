@@ -7,14 +7,14 @@ public struct LCh: Kolor {
 
 	public var ch: Channels
 
-	/// `Lightness` component [0...1] (0, 100)
+	/// `Lightness` component [0...1]
 	public var l: Double { get { ch.0 } set { ch.0 = newValue } }
-	/// `Chroma` component [0...1] (0, 100)
+	/// `Chroma` component [0...1]
 	public var c: Double { get { ch.1 } set { ch.1 = newValue } }
 	/// `Hue` component [0...360]
 	public var h: Double { get { ch.2 } set { ch.2 = newValue } }
 
-	public var ranges: CompRanges { (0...1, 0...1, 0...360) }
+	public static var ranges: CompRanges { (0...1, 0...1, 0...360) }
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -39,6 +39,8 @@ public struct LCh: Kolor {
 		let luv = XYZ(r: r, g: g, b: b).toLUV()
 		self.init(l: luv.l, u: luv.u, v: luv.v)
 	}
+
+	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX, normY, normZ) }
 
 	public func normalized() -> Channels { (ch.0, ch.1, ch.2 / 360) }
 
@@ -68,14 +70,14 @@ public extension LCh {
 
 }
 
-
 extension LCh: Cylindrical {
+
+	public var val: Double { get { ch.0 } set { ch.0 = newValue } }
+	public var sat: Double { get { ch.1 } set { ch.1 = newValue } }
+	public var hue: Double { get { ch.2 } set { ch.2 = newValue } }
 	
-	public var v: Double { get { ch.0 } set { ch.0 = newValue } }
-	public var s: Double { get { ch.1 } set { ch.1 = newValue } }
-	
-	public init(h: Double, s: Double, v: Double) {
-		self.ch = (v, s, h)
+	public init(hue: Double, sat: Double, val: Double) {
+		self.ch = (val, sat, hue)
 	}
-	
+
 }
