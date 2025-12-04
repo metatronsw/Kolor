@@ -177,7 +177,7 @@ public extension sRGB {
 
 	func toLUV() -> LUV { self.toRGB().toLUV() }
 
-	func toOKLAB() -> OKLAB { self.toRGB().toOKLAB() }
+	func toOKLAB() -> OKLab { self.toRGB().toOKLAB() }
 	
 	func toOKLCh() -> OKLCh { self.toRGB().toOKLCh() }
 

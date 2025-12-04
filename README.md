@@ -137,11 +137,11 @@ There are excellent and useful extensions for the CGImage and Image classes.
 
 The various components and formulas were gathered from multiple sources and rewritten from: 
 
-    1 Copyright (c) Lucas Beyer - https://github.com/lucasb-eyer/go-colorful
-    2 Copyright (c) Artur Torun (a.k.a. Mojzesh) - https://github.com/mojzesh/swift-colorful
-    3 Copyright (c) HSLuv Project - https://github.com/hsluv/hsluv-swift
-	 4 Copyright (c) Delta E (CIE 2000) - http://www.brucelindbloom.com/index.html?ColorDifferenceCalc.html
-		
+	1 Copyright (c) Lucas Beyer - https://github.com/lucasb-eyer/go-colorful
+	2 Copyright (c) Artur Torun (a.k.a. Mojzesh) - https://github.com/mojzesh/swift-colorful
+	3 Copyright (c) HSLuv Project - https://github.com/hsluv/hsluv-swift
+	4 Copyright (c) Delta E (CIE 2000) - http://www.brucelindbloom.com/index.html?ColorDifferenceCalc.html
+
 The other components are translated from C, C++, C#, Python, and JavaScript libraries. The add-ons and helper functions were written directly into the library, with many useful and well-known functions adapted to the project.
 
 

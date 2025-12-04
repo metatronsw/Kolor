@@ -145,7 +145,7 @@ public extension RGB {
 	
 	func toLUV() -> LUV { self.toXYZ().toLUV() }
 	
-	func toOKLAB() -> OKLAB { OKLAB(r: r, g: g, b: b) }
+	func toOKLAB() -> OKLab { OKLab(r: r, g: g, b: b) }
 	
 	func toOKLCh() -> OKLCh { OKLCh(r: r, g: g, b: b) }
 	

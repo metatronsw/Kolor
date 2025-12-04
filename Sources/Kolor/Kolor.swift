@@ -151,7 +151,7 @@ public enum KolorModes: Int, CaseIterable {
 			case .lab: LAB.self
 			case .lch: LCh.self
 			case .luv: LUV.self
-			case .oklab: OKLAB.self
+			case .oklab: OKLab.self
 			case .oklch: OKLCh.self
 			case .rgb: RGB.self
 			case .srgb: sRGB.self

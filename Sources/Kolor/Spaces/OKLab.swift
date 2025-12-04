@@ -2,7 +2,7 @@ import Foundation
 
 /// OKLAB color space, in Cartesian. It uses the D65 standard illuminant.
 ///
-public struct OKLAB: Kolor, Comparable {
+public struct OKLab: Kolor, Comparable {
 
 	public var ch: Channels
 
@@ -55,7 +55,7 @@ public struct OKLAB: Kolor, Comparable {
 
 }
 
-public extension OKLAB {
+public extension OKLab {
 
 	func toXYZ() -> XYZ {
 		let l = cub(self.L + 0.3963377774 * self.a + 0.2158037573 * self.b)
@@ -94,7 +94,7 @@ public extension OKLAB {
 
 }
 
-public extension OKLAB {
+public extension OKLab {
 
 	var hue: Double { atan2(a, b) }
 
@@ -164,9 +164,9 @@ public extension OKLAB {
 	}
 }
 
-extension OKLAB: DeltaE {
+extension OKLab: DeltaE {
 
-	public func distance(from c: OKLAB) -> Double {
+	public func distance(from c: OKLab) -> Double {
 		let deltaL = self.L - c.L
 		let deltaA = self.a - c.a
 		let deltaB = self.b - c.b
@@ -174,7 +174,7 @@ extension OKLAB: DeltaE {
 		return sqrt( sq(deltaL) + sq(deltaA) + sq(deltaB) )
 	}
 
-	public func distanceWeighted(from c: OKLAB, lightnes: Double = 1, power: Double = 1.5) -> Double {
+	public func distanceWeighted(from c: OKLab, lightnes: Double = 1, power: Double = 1.5) -> Double {
 		
 		let deltaL = self.L - c.L
 		let deltaA = self.a - c.a

@@ -22,7 +22,7 @@ public struct OKLCh: Kolor {
 	public init(L: Double = 0, C: Double = 0, h: Double = 0) { self.ch = (L, C, h) }
 
 	public init(r: Double, g: Double, b: Double) {
-		let oklab = OKLAB(r: r, g: g, b: b)
+		let oklab = OKLab(r: r, g: g, b: b)
 		let C = sqrt( sq(oklab.a) + sq(oklab.b) )
 		let h = atan2(oklab.b, oklab.a)
 		self.ch = (oklab.L, C, h)
@@ -30,19 +30,17 @@ public struct OKLCh: Kolor {
 
 	public init(normX: Double, normY: Double, normZ: Double) { self.ch = (normX, normY * 0.37, normZ * 6.283185307179586) }
 	
-	public func normalized() -> Channels {
-		print(h,  h * 180 / Double.pi)
-		return (ch.0, ch.1 / 0.37, ch.2 / 6.283185307179) }
+	public func normalized() -> Channels { return (ch.0, ch.1 / 0.37, ch.2 / 6.283185307179) }
 
 }
 
 public extension OKLCh {
 
-	func toOKLAB() -> OKLAB {
+	func toOKLAB() -> OKLab {
 		let a = self.C * cos(self.h)
 		let b = self.C * sin(self.h)
 
-		return OKLAB(L: self.L, a: a, b: b)
+		return OKLab(L: self.L, a: a, b: b)
 	}
 
 	func toRGB() -> RGB {
@@ -67,14 +65,14 @@ extension OKLCh: DeltaE {
 	
 	public func distance(from c: OKLCh) -> Double {
 
+		// OKLCh -> OKLab
 		let h1Rad = self.h * Double.pi / 180.0
 		let h2Rad = c.h * Double.pi / 180.0
-		
-		// OKLCh -> OKLab
 		let a1 = self.C * cos(h1Rad)
 		let a2 = c.C * cos(h2Rad)
 		let b1 = self.C * sin(h1Rad)
 		let b2 = c.C * sin(h2Rad)
+
 		
 		let deltaL = self.L - c.L
 		let deltaA = a1 - a2
