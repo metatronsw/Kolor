@@ -134,9 +134,7 @@ public enum KolorModes: Int, CaseIterable {
 	case din99, hcl, hsl, hsluv, hsv, lab, lch, luv, oklab, oklch, rgb, srgb, xyz, yuv
 
 	public enum Categoryes {
-
 		case redGreenBlue, cylindrical, xyzLab
-
 	}
 
 	public var name: String {

@@ -53,13 +53,12 @@ public extension OKLCh {
 
 extension OKLCh: Cylindrical {
 	
-	// TODO: Normalize ?
 	public var val: Double { get { ch.0 } set { ch.0 = newValue } }
 	public var sat: Double { get { ch.1 / 0.37 } set { ch.1 = newValue * 0.37 } }
-	public var hue: Double { get { ch.2 * Double.pi / 180 } set { ch.2 = newValue * 180 / Double.pi } }
+	public var hue: Double { get { ch.2 * 180 / Double.pi } set { ch.2 = newValue * Double.pi / 180 } }
 	
 	public init(hue: Double, sat: Double, val: Double) {
-		self.ch = (val, sat * 0.37, hue * 180 / Double.pi)
+		self.ch = (val, sat * 0.37, hue * Double.pi / 180)
 	}
 }
 
