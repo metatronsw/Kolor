@@ -2,19 +2,7 @@ import Foundation
 import simd
 
 public struct RGB: Kolor, ExpressibleByArrayLiteral {
-
-	public typealias ArrayLiteralElement = Double
-	
-	public var ch: Channels
-
-	/// `Red` component [0...1]
-	public var r: Double { get { ch.0 } set { ch.0 = newValue } }
-	/// `Green` component [0...1]
-	public var g: Double { get { ch.1 } set { ch.1 = newValue } }
-	/// `Blue` component [0...1]
-	public var b: Double { get { ch.2 } set { ch.2 = newValue } }
-
-	public static var ranges: CompRanges { (0...1, 0...1, 0...1) }
+	// MARK: Lifecycle
 
 	public init(ch: Channels) { self.ch = (ch.0, ch.1, ch.2) }
 
@@ -27,20 +15,18 @@ public struct RGB: Kolor, ExpressibleByArrayLiteral {
 	public init(normX: Double, normY: Double, normZ: Double) {
 		self.ch = (normX, normY, normZ)
 	}
-	
-	public func normalized() -> Channels { self.ch }
-	
+
 	public init(_ srgb: sRGB) {
 		self.ch = (Double(srgb.r) / 255, Double(srgb.g) / 255, Double(srgb.b) / 255)
 	}
-	
+
 	public init(arrayLiteral elements: ArrayLiteralElement...) {
 		assert(elements.count == 3)
 		self.ch.0 = elements[0]
 		self.ch.1 = elements[1]
 		self.ch.2 = elements[2]
 	}
-	
+
 	public init<T: BinaryInteger>(r: T = 0, g: T = 0, b: T = 0) {
 		self.ch = (Double(r) / 255, Double(g) / 255, Double(b) / 255)
 	}
@@ -98,14 +84,29 @@ public struct RGB: Kolor, ExpressibleByArrayLiteral {
 		return nil
 	}
 
+	// MARK: Public
+
+	public typealias ArrayLiteralElement = Double
+
+	public static var ranges: CompRanges { (0 ... 1, 0 ... 1, 0 ... 1) }
+
+	public var ch: Channels
+
+	/// `Red` component [0...1]
+	public var r: Double { get { ch.0 } set { ch.0 = newValue } }
+	/// `Green` component [0...1]
+	public var g: Double { get { ch.1 } set { ch.1 = newValue } }
+	/// `Blue` component [0...1]
+	public var b: Double { get { ch.2 } set { ch.2 = newValue } }
+
+	public func normalized() -> Channels { self.ch }
 }
 
 public extension RGB {
-
 	var isValid: Bool {
 		r >= 0.0 && r <= 1.0 &&
-		g >= 0.0 && g <= 1.0 &&
-		b >= 0.0 && b <= 1.0
+			g >= 0.0 && g <= 1.0 &&
+			b >= 0.0 && b <= 1.0
 	}
 
 	var comp: (UInt32, UInt32, UInt32) {
@@ -118,45 +119,43 @@ public extension RGB {
 	func toClamped() -> RGB {
 		RGB(r: r.clamped(), g: g.clamped(), b: b.clamped())
 	}
-	
+
 	func toSRGB() -> sRGB {
 		sRGB(r: UInt8(min(255, r.clamped() * 255 + 0.5)),
-			  g: UInt8(min(255, g.clamped() * 255 + 0.5)),
-			  b: UInt8(min(255, b.clamped() * 255 + 0.5)))
+		     g: UInt8(min(255, g.clamped() * 255 + 0.5)),
+		     b: UInt8(min(255, b.clamped() * 255 + 0.5)))
 	}
 
 	func toRGB() -> RGB { self }
 
 	func toCMYK() -> CMYK { CMYK(r: r, g: g, b: b) }
-	
-	func toHCL() -> HCL { HCL(r: r, g: g, b: b) }
-	
-	func toHSL() -> HSL { HSL(r: r, g: g, b: b) }
-	
-	func toHSLuv() -> HSLuv { HSLuv(r: r, g: g, b: b) }
-	
-	func toHSV() -> HSV { HSV(r: r, g: g, b: b) }
-	
-	func toLAB() -> LAB { self.toXYZ().toLAB() }
-	
-	func toDIN99() -> DIN99 { self.toXYZ().toLAB().toDIN99() }
-	
-	func toLCh() -> LCh { self.toXYZ().toLUV().toLCh() }
-	
-	func toLUV() -> LUV { self.toXYZ().toLUV() }
-	
-	func toOKLAB() -> OKLab { OKLab(r: r, g: g, b: b) }
-	
-	func toOKLCh() -> OKLCh { OKLCh(r: r, g: g, b: b) }
-	
-	func toXYZ() -> XYZ { XYZ(r: r, g: g, b: b) }
-	
-	func toYUV() -> YUV { YUV(r: r, g: g, b: b) }
 
+	func toHCL() -> HCL { HCL(r: r, g: g, b: b) }
+
+	func toHSL() -> HSL { HSL(r: r, g: g, b: b) }
+
+	func toHSLuv() -> HSLuv { HSLuv(r: r, g: g, b: b) }
+
+	func toHSV() -> HSV { HSV(r: r, g: g, b: b) }
+
+	func toLAB() -> LAB { self.toXYZ().toLAB() }
+
+	func toDIN99() -> DIN99 { self.toXYZ().toLAB().toDIN99() }
+
+	func toLCh() -> LCh { self.toXYZ().toLUV().toLCh() }
+
+	func toLUV() -> LUV { self.toXYZ().toLUV() }
+
+	func toOKLAB() -> OKLab { OKLab(r: r, g: g, b: b) }
+
+	func toOKLCh() -> OKLCh { OKLCh(r: r, g: g, b: b) }
+
+	func toXYZ() -> XYZ { XYZ(r: r, g: g, b: b) }
+
+	func toYUV() -> YUV { YUV(r: r, g: g, b: b) }
 }
 
 public extension RGB {
-
 	/// Convert to Linear RGB
 	func toLinearized() -> RGB {
 		RGB(r: r.linearize(), g: g.linearize(), b: b.linearize())
@@ -167,7 +166,6 @@ public extension RGB {
 		RGB(r: r.delinearize(), g: g.delinearize(), b: b.delinearize())
 	}
 
-	
 	/// Convert from Linear RGB
 	func linear_toDisplayP3Linear() -> RGB {
 		let sRGBtoXYZ = (
@@ -189,7 +187,7 @@ public extension RGB {
 
 		return RGB(ch: p3Linear)
 	}
-	
+
 	/// Convert to DisplayP3
 	func toDisplayP3() -> RGB {
 		let p3Linear = self.toLinearized().linear_toDisplayP3Linear()
@@ -200,12 +198,11 @@ public extension RGB {
 		}
 
 		return RGB(gammaCorrect(p3Linear.r),
-					  gammaCorrect(p3Linear.g),
-					  gammaCorrect(p3Linear.b))
+		           gammaCorrect(p3Linear.g),
+		           gammaCorrect(p3Linear.b))
 	}
 
 	func displayP3_toRGB() -> RGB {
-		
 		func displayP3ToLinear(_ c: Double) -> Double {
 			return (c <= 0.04045) ? (c / 12.92) : pow((c + 0.055) / 1.055, 2.4)
 		}
@@ -236,24 +233,22 @@ public extension RGB {
 		let linearSRGB = matrixMul(XYZtoSRGB, xyz)
 
 		return RGB(linearToSRGB(linearSRGB.0),
-					  linearToSRGB(linearSRGB.1),
-					  linearToSRGB(linearSRGB.2))
+		           linearToSRGB(linearSRGB.1),
+		           linearToSRGB(linearSRGB.2))
 	}
-
 }
 
 extension RGB: DeltaE {
-	
 	public func distance(from col: RGB) -> Double {
 		sqrt(sq(r - col.r) + sq(g - col.g) + sq(b - col.b))
 	}
-	
+
 	public func distanceLinear(_ col: RGB) -> Double {
 		let a = self.toLinearized()
 		let b = col.toLinearized()
-		return sqrt((sq(a.r - b.r) + sq(a.g - b.g) + sq(a.b - b.b)))
+		return sqrt(sq(a.r - b.r) + sq(a.g - b.g) + sq(a.b - b.b))
 	}
-	
+
 	public func distanceWeight(_ col: RGB) -> Double {
 		let rmean = (self.r + col.r) / 2
 		let rD = self.r - col.r
@@ -262,26 +257,24 @@ extension RGB: DeltaE {
 		let weightR = 2.0 + rmean / 256
 		let weightG = 4.0
 		let weightB = 2.0 + (255 - rmean) / 256
-		return sqrt(weightR * sq(rD) + weightG * sq(gD) + weightB * sq(bD) )
+		return sqrt(weightR * sq(rD) + weightG * sq(gD) + weightB * sq(bD))
 	}
-	
+
 	public func almostEqual(_ c: RGB, Delta: Double = 0.00392156862745098039215686) -> Bool {
 		abs(r - c.r) + abs(g - c.g) + abs(b - c.b) < (3.0 * Delta)
 	}
 }
 
-
 public extension RGB {
-	
 	func blend(c: RGB, t: Double) -> RGB {
 		RGB(r: r + t * (c.r - r), g: g + t * (c.g - g), b: b + t * (c.b - b))
 	}
-	
+
 	func paletteGen(step: Int) -> [RGB] {
 		let stp = 1.0 / Double(step)
 		var (r, g, b) = (0.0, 0.0, 0.0)
 		var palette = [RGB]()
-		
+
 		while b <= 1 {
 			while g <= 1 {
 				while r <= 1 {
@@ -294,8 +287,7 @@ public extension RGB {
 			g = 0
 			b += stp
 		}
-		
+
 		return palette
 	}
-	
 }

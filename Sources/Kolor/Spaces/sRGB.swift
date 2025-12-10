@@ -362,7 +362,6 @@ public extension sRGB {
 		return sRGB(max(0, 255 - self.r), max(0, 255 - self.g), max(0, 255 - self.b))
 	}
 
-
 	static func paletteGen(interval: Int) -> [sRGB] {
 		return paletteGen(step: 256 / interval)
 	}
@@ -394,4 +393,29 @@ public extension sRGB {
 		return palette
 	}
 
+}
+
+public extension sRGB {
+	
+	func toRGB565() -> UInt16 {
+		
+		let r5 = UInt16(r >> 3) & 0x1F
+		let g6 = UInt16(g >> 2) & 0x3F
+		let b5 = UInt16(b >> 3) & 0x1F
+		
+		return (r5 << 11) | (g6 << 5) | b5
+	}
+	
+	init(rgb565: UInt16) {
+		
+		let r5 = (rgb565 >> 11) & 0x1F
+		let g6 = (rgb565 >> 5) & 0x3F
+		let b5 = rgb565 & 0x1F
+		
+		self.r = UInt8((r5 << 3) | (r5 >> 2))
+		self.g = UInt8((g6 << 2) | (g6 >> 4))
+		self.b = UInt8((b5 << 3) | (b5 >> 2))
+		
+	}
+	
 }
